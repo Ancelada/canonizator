@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+  
+  <title>Crawlers Manager</title>
+	{% load staticfiles %}
+  <!-- <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"> -->
+  <link rel="stylesheet" href="{% static 'css/foundation.css' %}">
+  <link rel="stylesheet" href="{% static 'css/foundation-flex.css' %}">
+  <link rel="stylesheet" href="{% static 'css/foundation-icons/foundation-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+
+
+
+  <div class="large-12 small-12 columns">
+    {% block content %}{% endblock %}    
+  </div>
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="{% static 'js/loader.js' %}"></script>
+  <script src="{% static 'js/application.js' %}"></script>
+  <script src="{% static 'js/statistics.js' %}"></script>
+</body>

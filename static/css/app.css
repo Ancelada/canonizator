@@ -1,0 +1,32 @@
+.left_panel, .right_panel, .central_panel{
+	min-height:100%;
+}
+
+
+.nopadding{
+	padding:0;
+}
+
+
+h1{
+	font-size: 24px;
+}
+h2{
+	font-size: 18px;
+}
+
+th{
+	font-size:14px;
+}
+
+td{
+	font-size: 14px;
+}
+
+.color_alert{
+	color:red;
+}
+
+.color_success{
+	color:green;
+}

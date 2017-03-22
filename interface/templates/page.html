@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+
+
+
+{% block content %}
+	{% load jsonify %}
+	<div class="large-1 small-1 columns left_panel">
+		{{left_panel}}
+	</div>
+
+	<div class="large-10 small-10 columns central_panel">
+		{{central_panel}}
+	</div>
+
+	<div class="large-1 small-1 columns right_panel">
+		{{right_panel}}
+	</div>
+
+	<script>
+		{% if statistics_dict %}
+			var statistics_dict = {{statistics_dict|jsonify}}
+		{% endif %}
+	</script>
+{% endblock %}

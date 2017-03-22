@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+
+
+{% block content %}
+
+<div class="large-12 small-12 columns">
+	<h1>Canonizator</h1>
+</div>
+<div class="large-12 small-12 columns nopadding">
+    <h2>Список программ</h2>
+  </div>
+  <div class="large-12 small-12 columns nopadding">
+    <table>
+      <thead>
+        <tr>
+          <th>№ пп</th>
+          <th>Наименование</th>
+          <th>Запущен/остановлен</th>
+          <th>Последний статус</th>
+          <th>Дата</th>
+          <th>Количество новостей</th>
+          <th>Последняя ошибка</th>
+          <th>Дата</th>
+          <th>Содержание ошибки</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for program in programs %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{program.name}}</td>
+            <td class="{% if program.pid %}color_success{% else %}color_alert{% endif %}">{% if program.pid %}запущен{% else %}остановлен{% endif %}</td>
+            <td>{{ program.last_status.status }}</td>
+            <td>{{ program.last_status.date }}</td>
+            <td>{{ program.last_status.news_amount }}</td>
+            <td>{{ program.last_error.name }}</td>
+            <td>{{ program.last_error.date }}</td>
+            <td title="{{ program.last_error.error|truncatechars:1700 }}">{{ program.last_error.error|truncatechars:100|linebreaks }}</td>
+            <td>
+              {% if program.pid %}
+                <a href="{% url 'canonizator:stop' program.pid %}">
+                  <button>Остановить</button>
+                </a>
+              {% else %}
+                <a href="{% url 'canonizator:start' program.file_name %}">
+                  <button>Запустить</button>
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
