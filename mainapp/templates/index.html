@@ -33,7 +33,7 @@
             <td class="{% if program.pid %}color_success{% else %}color_alert{% endif %}">{% if program.pid %}запущен{% else %}остановлен{% endif %}</td>
             <td>{{ program.last_status.status }}</td>
             <td>{{ program.last_status.date }}</td>
-            <td>{{ program.last_status.news_amount }}</td>
+            <td>{{ program.last_status.count }}</td>
             <td>{{ program.last_error.name }}</td>
             <td>{{ program.last_error.date }}</td>
             <td title="{{ program.last_error.error|truncatechars:1700 }}">{{ program.last_error.error|truncatechars:100|linebreaks }}</td>

@@ -72,7 +72,9 @@ class MainApp:
 
 	def __module_names(self, package):
 		for name in os.listdir(os.path.join(self.path, 'daemons')):
-			if name.startswith('copy_pub') or name.startswith('normalize_pub'):
+			if name.startswith('copy_pub') or name.startswith('normalize_pub') \
+			 or name.startswith('links_syn') or name.startswith('make_h') \
+			 or name.startswith('pubc'):
 				yield name[:-3]
 
 	def __import_submodules(self, package):

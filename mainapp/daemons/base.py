@@ -3,8 +3,8 @@ import daemon.pidfile
 import os
 import psutil
 
+import django.db
 from django.db import connection
-
 
 class Base:
 

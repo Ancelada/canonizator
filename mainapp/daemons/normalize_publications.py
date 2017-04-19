@@ -5,6 +5,8 @@ import pymorphy2
 import traceback
 import psutil
 import time
+import binascii
+from django.utils import timezone
 from more_itertools import unique_everseen
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +27,7 @@ from django.db.models import Max
 class Program:
 
 	def __init__(self):
+		self.list_value = 5000
 		self.name = 'Канонизация'
 		self.file_name = 'normalize_publications'
 		self.morth = pymorphy2.MorphAnalyzer()
@@ -34,7 +37,7 @@ class Program:
 		self.statuses_dir = os.path.join(self.base_dir, 'daemons/statuses')
 		self.context = Base().create_daemon_context(self.file_name)
 
-		self.punctuations = re.compile('([-_<>?/\\".,{}@#!&()=+:;«»—*])')
+		self.punctuations = re.compile('([-_<>?/\\".„”“%,{}@#!&()=+:;«»—$&£*])')
 		self.grammems_to_remove = {
 			'NPRO',
 			'PRED',
@@ -64,7 +67,26 @@ class Program:
             'real': [],
         }
 
+		self.voc_models = {
+        	'NOUN': NOUN,
+            'ADJF': ADJF,
+            'ADJS': ADJS,
+            'COMP': COMP,
+            'VERB': VERB,
+            'INFN': INFN,
+            'PRTF': PRTF,
+            'PRTS': PRTS,
+            'GRND': GRND,
+            'NUMR': NUMR,
+            'ADVB': ADVB,
+            'LATN': LATN,
+            'NUMB': NUMB,
+            'intg': intg,
+            'real': real,
+        }
+
 	def get_last_status(self):
+		Base().connection()
 		try:
 			max_date = NormalizePublicationStatus.objects.all().aggregate(Max('date'))['date__max']
 			last_status = NormalizePublicationStatus.objects.get(date=max_date)
@@ -73,6 +95,7 @@ class Program:
 		return last_status
 
 	def get_last_error(self):
+		Base().connection()
 		try:
 			max_date = NormalizePublicationError.objects.all().aggregate(Max('date'))['date__max']
 			last_error = NormalizePublicationError.objects.get(date=max_date)
@@ -88,6 +111,8 @@ class Program:
 		###############################
 		# обработка словаря
 		self.__remove_doubles(self.vocabulary)
+		self.__remove_already_have(self.vocabulary)
+		self.__add_vocabulary_to_db(self.vocabulary)
 
 
 	#### функция удаления дубликатов значений списков в словаре
@@ -95,6 +120,38 @@ class Program:
 		for key in vocabulary:
 			vocabulary[key] = list(unique_everseen(vocabulary[key]))
 
+	#### функция удаления уже имеющихся в БД
+	def __remove_already_have(self, vocabulary):
+
+		Base().connection()
+
+		for key, value in vocabulary.items():
+			doubles = self.voc_models[key].objects.filter(name__in=vocabulary[key]).values('name')
+			for double in doubles:
+				self.__remove_from_array_by_value(vocabulary[key], double['name'])
+
+	##### удаление из массива по значению
+	def __remove_from_array_by_value(self, array, value):
+		if value in array:
+			array.remove(value)
+
+	##### добавление в БД списков частей речи
+	def __add_vocabulary_to_db(self, vocabulary):
+
+		Base().connection()
+
+		for key in vocabulary:
+			words = []
+			for word in vocabulary[key]:
+				words.append(self.voc_models[key](name=word, crc32=self.__convert_crc32(word), \
+				 lft=0, rght=0, level=0, tree_id=0))
+			if len(words) > 0:
+				now = timezone.now()
+				self.voc_models[key].objects.bulk_create(words)
+
+	def __convert_crc32(self, value):
+		value_bytes=bytes(value, 'utf-8')
+		return binascii.crc32(value_bytes)
 
 	def save_error(self):
 
@@ -122,7 +179,8 @@ class Program:
 			)
 
 	def remove_punctuation(self, string):
-		string = self.punctuations.sub('', string)
+		string = re.sub(self.punctuations, '', string)
+		string = string.replace('ё', 'е')
 		string = ' '.join(string.splitlines())
 		return string
 
@@ -140,6 +198,7 @@ class Program:
 			return True
 
 	def normalize_word(self, parsed_to_morph):
+		##### нужно уменьшить размер слова, заменить буквы ё на е
 		normal_form = parsed_to_morph.normal_form
 		# наполненяем словарь каждым встречающимся словом
 		self.fill_vocabulary(parsed_to_morph, normal_form)
@@ -155,6 +214,7 @@ class Program:
 	def get_last_pcopy_id(self):
 
 		Base().connection()
+		
 		try:
 			last_pcopy = NormalizePublication.objects.all().aggregate( \
 				Max('CopyPublication_id'))['CopyPublication_id__max']
@@ -169,9 +229,9 @@ class Program:
 		last_pcopy = self.get_last_pcopy_id()
 		if last_pcopy != None:
 			pcopy_list = CopyPublication.objects.filter(id__gt=last_pcopy).values( \
-				'id', 'title', 'text')[:1]
+				'id', 'title', 'text')[:self.list_value]
 		else:
-			pcopy_list = CopyPublication.objects.all().values('id', 'title', 'text')[:1]
+			pcopy_list = CopyPublication.objects.all().values('id', 'title', 'text')[:self.list_value]
 		return pcopy_list
 
 	def normalize(self, pcopy_list):
@@ -181,22 +241,38 @@ class Program:
 			pcopy['text'] = self.remove_punctuation(pcopy['text'])
 
 			title = []
-			for word in self.split_line(pcopy['title']):
-				word_parsed_to_morph = self.parse_to_morph(word)
-				if self.check_word(word_parsed_to_morph):
-					title.append( self.normalize_word(word_parsed_to_morph) )
-
+			title_words = {}
+			self.__check_n_normalize(title, title_words, self.split_line(pcopy['title']))
 			pcopy['title'] = ' '.join(title)
+			pcopy['title_words'] = title_words
 
 			text = []
-			for word in self.split_line(pcopy['text']):
-				word_parsed_to_morph = self.parse_to_morph(word)
-				if self.check_word(word_parsed_to_morph):
-					text.append( self.normalize_word(word_parsed_to_morph) )
-
+			text_words = {}
+			self.__check_n_normalize(text, text_words, self.split_line(pcopy['text']))
 			pcopy['text'] = ' '.join(text)
+			pcopy['text_words'] = text_words
 
 		return pcopy_list
+
+	def __check_n_normalize(self, exp_list, exp_voc_list, words):
+		for word in words:
+			word_parsed_to_morph = self.parse_to_morph(word)
+			if self.check_word(word_parsed_to_morph):
+
+				normalized_word = self.normalize_word(word_parsed_to_morph) 
+				word_crc_32 = self.__convert_crc32(normalized_word)
+
+				# обычный список нормализованных слов
+				exp_list.append( normalized_word )
+
+				# словарь частей речи со словами crc32
+				pos = str(word_parsed_to_morph.tag.POS)
+
+				if not pos in exp_voc_list:
+					exp_voc_list[pos] = [word_crc_32]
+				else:
+					exp_voc_list[pos].append(word_crc_32)
+
 
 	def save(self, normalized_list):
 
@@ -208,7 +284,9 @@ class Program:
 				NormalizePublication(
 					title = item['title'],
 					text = item['text'],
-					CopyPublication_id = item['id']
+					CopyPublication_id = item['id'],
+					title_words = item['title_words'],
+					text_words = item['text_words'],
 				)
 			)
 		count = len(normalized_publications)
@@ -220,24 +298,22 @@ class Program:
 	########################################
 	# запуск программы
 	def run_daemon(self):
-		self.start()
-		print (self.vocabulary)
-		# try:
-		# 	self.context.open()
-		# 	with self.context:
-		# 		while True:
-		# 			Base().update_working_status(self, 'waiting')
-		# 			can_program = Base().can_program(self)
-		# 			if can_program:
-		# 				Base().update_working_status(self, 'working')
-		# 				self.start()
-		# 				Base().update_working_status(self, 'waiting')
-		# 				Base().update_pidfile(self)
-		# 				time.sleep(300)
-		# 			else:
-		# 				time.sleep(300)
-		# except Exception:
-		# 	self.save_error()
+		try:
+			self.context.open()
+			with self.context:
+				while True:
+					Base().update_working_status(self, 'waiting')
+					can_program = Base().can_program(self)
+					if can_program:
+						Base().update_working_status(self, 'working')
+						self.start()
+						Base().update_working_status(self, 'waiting')
+						Base().update_pidfile(self)
+						time.sleep(300)
+					else:
+						time.sleep(300)
+		except Exception:
+			self.save_error()
 
 	def get_pid(self):
 
@@ -257,5 +333,3 @@ class Program:
 				os.remove(os.path.join(directory, '{0}.pid'.format(self.file_name)))
 				return None
     #############################################
-
-a = Program().run_daemon()

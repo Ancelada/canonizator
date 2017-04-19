@@ -1,0 +1,13 @@
+{% for statistic in statistics_common %}
+	<div class="large-12 small-12 columns nopadding">
+		<h1>{{statistic.name}}</h1>
+	</div>
+	<div id="{{statistic.id}}" class="large-12 small-12 columns nopadding">
+		
+	</div>
+{% endfor %}
+
+
+<script>
+  var statistics_common = {{statistics_common|safe}};
+</script>

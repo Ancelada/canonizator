@@ -23,6 +23,7 @@ from mainapp.daemons.base import Base
 class Program:
 
 	def __init__(self):
+		self.publications_count = 5000
 		self.name = 'Копирование'
 		self.file_name = 'copy_publications'
 		self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,6 +32,9 @@ class Program:
 		self.context = Base().create_daemon_context(self.file_name)
 
 	def get_last_status(self):
+
+		Base().connection()
+
 		try:
 			max_date = CopyPublicationStatus.objects.all().aggregate(Max('date'))['date__max']
 			last_status = CopyPublicationStatus.objects.get(date=max_date)
@@ -39,6 +43,9 @@ class Program:
 		return last_status
 
 	def get_last_error(self):
+
+		Base().connection()
+
 		try:
 			max_date = CopyPublicationError.objects.all().aggregate(Max('date'))['date__max']
 			last_error = CopyPublicationError.objects.get(date=max_date)
@@ -88,11 +95,11 @@ class Program:
 
 		if date == None:
 			publications = Publication.objects.using('manager').all().values('title', 'text', 'date', \
-				 'crawler__name', 'author')[:3000]
+				 'crawler__name', 'author')[:self.publications_count]
 		else:
 			publications = Publication.objects.using('manager').filter( \
 				date__gte=date).values('title', \
-			 'text', 'date', 'crawler__name', 'author')[:3000]
+			 'text', 'date', 'crawler__name', 'author')[:self.publications_count]
 
 		publications_filtered = []
 
@@ -110,17 +117,18 @@ class Program:
 				publications_filtered.append(publication)
 
 		# убираем дубли, если они существуют в canonizator.PublicationCopy
-		publication_copys = CopyPublication.objects.filter(date__gte=date).values('title', 'text', \
-			'date', 'name', 'author')
+		if date != None:
+			publication_copys = CopyPublication.objects.filter(date__gte=date).values('title', 'text', \
+				'date', 'name', 'author')
 
-		for publication_copy in publication_copys:
-			for publication_filtered in publications_filtered:
-				if publication_filtered['title'] == publication_copy['title'] and \
-				publication_filtered['text'] == publication_copy['text'] and \
-				publication_filtered['date'] == publication_copy['date'] and \
-				publication_filtered['crawler__name'] == publication_copy['name'] and \
-				publication_filtered['author'] == publication_copy['author']:
-					publications_filtered.remove(publication_filtered)
+			for publication_copy in publication_copys:
+				for publication_filtered in publications_filtered:
+					if publication_filtered['title'] == publication_copy['title'] and \
+					publication_filtered['text'] == publication_copy['text'] and \
+					publication_filtered['date'] == publication_copy['date'] and \
+					publication_filtered['crawler__name'] == publication_copy['name'] and \
+					publication_filtered['author'] == publication_copy['author']:
+						publications_filtered.remove(publication_filtered)
 
 		# записываем в CopyPublication publications_filtered
 		publication_copys = []
@@ -131,6 +139,7 @@ class Program:
 
 		count = len(publication_copys)
 		if count > 0:
+			Base().connection()
 			CopyPublication.objects.bulk_create(publication_copys)
 
 		self.save_status(count)

@@ -1,25 +1,27 @@
-if (typeof statistics_dict != 'undefined'){
+if (typeof statistics != 'undefined'){
 
-	google.charts.load('current', {'packages':['bar']});
+	/*google.charts.load('current', {'packages':['bar', 'corechart']});*/
 
-	google.charts.setOnLoadCallback(drawChart);
+	google.charts.setOnLoadCallback(drawBarChart);
 
-	function drawChart(){
-		$.each(statistics_dict, function(i){
-			var data = google.visualization.arrayToDataTable(statistics_dict[i]['data']);
+	function drawBarChart(){
+		$.each(statistics, function(i){
+
+			var data = google.visualization.arrayToDataTable(statistics[i]['chart_array']);
+
 
 			var options = {
-				charts: {
-					'title': statistics_dict[i]['name'],
-					'subtitle': 'Публикации и ошибки'
+				chart: {
+					title: statistics[i]['name'],
+					subtitle: 'Публикации и ошибки'
 				}
 			}
 
-			var chart = new google.charts.Bar(document.getElementById(statistics_dict[i]['id'].toString()));
+
+
+			var chart = new google.charts.Bar(document.getElementById(statistics[i]['id'].toString()));
 
 			chart.draw(data, options);
 		});
 	}
-
-	console.log(statistics_dict);
 }
