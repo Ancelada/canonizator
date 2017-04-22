@@ -314,3 +314,6 @@ class Statistics:
 		statistics.append({'name':name, 'chart_array': chart_array, 'id': 'crawler_copys'})
 
 		return statistics
+
+	def build_statistics_pubcompare(self):
+		pass

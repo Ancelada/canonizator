@@ -27,7 +27,7 @@ from django.db.models import Max
 class Program:
 
 	def __init__(self):
-		self.list_value = 5000
+		self.list_value = 10
 		self.name = 'Канонизация'
 		self.file_name = 'normalize_publications'
 		self.morth = pymorphy2.MorphAnalyzer()
@@ -38,6 +38,18 @@ class Program:
 		self.context = Base().create_daemon_context(self.file_name)
 
 		self.punctuations = re.compile('([-_<>?/\\".„”“%,{}@#!&()=+:;«»—$&£*])')
+		self.copypublication_fields = [
+			'crawler_id',
+			'name',
+			'name_cyrillic',
+			'title',
+			'text',
+			'author',
+			'date',
+			'id',
+		]
+
+
 		self.grammems_to_remove = {
 			'NPRO',
 			'PRED',
@@ -108,6 +120,7 @@ class Program:
 		pcopy_list = self.get_pcopy_list(last_pcopy)
 		normalized_list = self.normalize(pcopy_list)
 		self.save(normalized_list)
+
 		###############################
 		# обработка словаря
 		self.__remove_doubles(self.vocabulary)
@@ -228,10 +241,13 @@ class Program:
 
 		last_pcopy = self.get_last_pcopy_id()
 		if last_pcopy != None:
-			pcopy_list = CopyPublication.objects.filter(id__gt=last_pcopy).values( \
-				'id', 'title', 'text')[:self.list_value]
+			pcopy_list = CopyPublication.objects.filter(id__gt=last_pcopy).values(
+				*self.copypublication_fields
+			)[:self.list_value]
 		else:
-			pcopy_list = CopyPublication.objects.all().values('id', 'title', 'text')[:self.list_value]
+			pcopy_list = CopyPublication.objects.all().values(
+				*self.copypublication_fields
+			)[:self.list_value]
 		return pcopy_list
 
 	def normalize(self, pcopy_list):
@@ -282,8 +298,13 @@ class Program:
 		for item in normalized_list:
 			normalized_publications.append(
 				NormalizePublication(
+					crawler_id = item['crawler_id'],
+					name = item['name'],
+					name_cyrillic = item['name_cyrillic'],
 					title = item['title'],
 					text = item['text'],
+					author = item['author'],
+					pubdate = item['date'],
 					CopyPublication_id = item['id'],
 					title_words = item['title_words'],
 					text_words = item['text_words'],

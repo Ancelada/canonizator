@@ -25,7 +25,7 @@ from mainapp.daemons.base import Base
 class Program:
 
 	def __init__(self):
-		self.publications_count = 400
+		self.publications_count = 10
 		self.name = 'Создание хешей публикаций'
 		self.file_name = 'make_hashes'
 		self.morth = pymorphy2.MorphAnalyzer()
@@ -189,8 +189,9 @@ class Program:
 	def __append_n_sort(self, line_words):
 		result = []
 		for pos, words in line_words.items():
-			for word in words:
-				result.append(word)
+			if pos != 'None':
+				for word in words:
+					result.append(word)
 
 		return sorted(result, key=lambda word: word['no'])
 
@@ -209,7 +210,7 @@ class Program:
 
 		packet = NormalizePublication.objects.filter(
 			title_hashes={}
-		).order_by('CopyPublication__date')[:self.publications_count]
+		).order_by('pubdate')[:self.publications_count]
 
 		# запрашиваем все слова
 		vocabulary = self.__get_all_words(packet)
@@ -278,6 +279,13 @@ class Program:
 		for word in words_list:
 			crc32.append(binascii.crc32(bytes(word, 'utf-8')))
 		return crc32
+
+	def delete_hashes(self):
+
+		to_delete = NormalizePublication.objects.exclude(title_hashes={}).update(
+			title_hashes={},
+			text_hashes={},
+		)
 
 	########################################
 	# запуск программы

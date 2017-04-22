@@ -3,6 +3,7 @@ import sys
 import traceback
 import psutil
 import time
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
@@ -23,13 +24,30 @@ from mainapp.daemons.base import Base
 class Program:
 
 	def __init__(self):
-		self.publications_count = 5000
+		self.publications_count = 10
 		self.name = 'Копирование'
 		self.file_name = 'copy_publications'
 		self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 		self.pids_dir = os.path.join(self.base_dir, 'daemons/pids')
 		self.statuses_dir = os.path.join(self.base_dir, 'daemons/statuses')
 		self.context = Base().create_daemon_context(self.file_name)
+
+		self.publication_table_columns = [
+			'crawler__id',
+			'crawler__name',
+			'crawler__name_cyrillic',
+			'title',
+			'text',
+			'date',
+			'author',
+		]
+
+		self.copypublication_table_columns = [
+			'crawler_id',
+			'title',
+			'text',
+			'date',
+		]
 
 	def get_last_status(self):
 
@@ -89,58 +107,79 @@ class Program:
 			date = None
 		return date
 
+	def __remove_doubles(self, publications):
+		for key, publication in enumerate(publications):
+			if any(p['title'] == publication['title'] and p['text'] == publication['text'] and \
+				p['date'] == publication['date'] and p['crawler__id'] == publication['crawler__id'] \
+				for p in publications[key+1:]):
+
+				del publications[key]
+
+				return self.__remove_doubles(publications)
+
+		return publications
+
+	def __remove_doubles_by_copypublication_table(self, publications, copypublications):
+		for key, publication in enumerate(publications):
+			if any(p['crawler_id'] == publication['crawler__id'] and p['title']==publication['title'] \
+			 and p['text'] == publication['text'] and p['date'] == publication['date'] \
+			  for p in copypublications):
+
+				del publications[key]
+
+				return self.__remove_doubles_by_copypublication_table(publications, copypublications)
+		return publications
+
 	def push(self, date):
 
 		Base().connection()
 
 		if date == None:
-			publications = Publication.objects.using('manager').all().values('title', 'text', 'date', \
-				 'crawler__name', 'author')[:self.publications_count]
+			publications = list(Publication.objects.using('manager').all().values(
+				*self.publication_table_columns
+			).order_by('date')[:self.publications_count])
 		else:
-			publications = Publication.objects.using('manager').filter( \
-				date__gte=date).values('title', \
-			 'text', 'date', 'crawler__name', 'author')[:self.publications_count]
+			publications = list(Publication.objects.using('manager').filter(
+				date__gte=date
+			).values(
+				*self.publication_table_columns
+			).order_by('date')[:self.publications_count])
 
-		publications_filtered = []
 
 		# убираем дубли, если они существуют в manager.Publication
-		for publication in publications:
-			doubled = 0
-			for publication_filtered in publications_filtered:
-				if publication['title'] == publication_filtered['title'] and \
-				publication['text'] == publication_filtered['text'] and \
-				publication['date'] == publication_filtered['date'] and \
-				publication['crawler__name'] == publication_filtered['crawler__name'] and \
-				publication['author'] == publication_filtered['author']:
-					doubled = 1
-			if doubled == 0:
-				publications_filtered.append(publication)
+		publications = self.__remove_doubles(publications)
 
 		# убираем дубли, если они существуют в canonizator.PublicationCopy
 		if date != None:
-			publication_copys = CopyPublication.objects.filter(date__gte=date).values('title', 'text', \
-				'date', 'name', 'author')
 
-			for publication_copy in publication_copys:
-				for publication_filtered in publications_filtered:
-					if publication_filtered['title'] == publication_copy['title'] and \
-					publication_filtered['text'] == publication_copy['text'] and \
-					publication_filtered['date'] == publication_copy['date'] and \
-					publication_filtered['crawler__name'] == publication_copy['name'] and \
-					publication_filtered['author'] == publication_copy['author']:
-						publications_filtered.remove(publication_filtered)
+			copypublications = CopyPublication.objects.filter(
+				date__gte=date-timedelta(days=1)).values(
+					*self.copypublication_table_columns
+				)
+
+			publications = self.__remove_doubles_by_copypublication_table(publications, copypublications)
 
 		# записываем в CopyPublication publications_filtered
-		publication_copys = []
-		for publication_filtered in publications_filtered:
-			publication_copys.append(CopyPublication(name=publication_filtered['crawler__name'], \
-				title=publication_filtered['title'], text=publication_filtered['text'], \
-				 date=publication_filtered['date'], author=publication_filtered['author']))
+		copypublications = []
 
-		count = len(publication_copys)
+		for publication in publications:
+			copypublications.append(CopyPublication(
+				crawler_id=publication['crawler__id'],
+				name=publication['crawler__name'],
+				name_cyrillic=publication['crawler__name_cyrillic'],
+				title=publication['title'],
+				text=publication['text'],
+				date=publication['date'],
+				author=publication['author'],
+			))
+
+		count = len(copypublications)
+
 		if count > 0:
+
 			Base().connection()
-			CopyPublication.objects.bulk_create(publication_copys)
+
+			CopyPublication.objects.bulk_create(copypublications)
 
 		self.save_status(count)
 

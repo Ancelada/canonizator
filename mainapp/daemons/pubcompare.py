@@ -71,19 +71,20 @@ class PubCompare():
 
 		return result
 
-	def compaire (self, source_1, source_2):
-
+	def compaire(self, source_1, source_2):
 		same = 0
 
 		shingles_source_1 = self.__make_shingles_list(source_1)
 
 		shingles_source_2 = self.__make_shingles_list(source_2)
 
-		for shingle in shingles_source_1:
-			if shingle in shingles_source_2:
-				same+=1
-
-		return same*2/float(len(shingles_source_1) + len(shingles_source_2))*100
+		if len(shingles_source_1) > 0 and len(shingles_source_2) > 0:
+			for shingle in shingles_source_1:
+				if shingle in shingles_source_2:
+					same+=1
+			return same*2/float(len(shingles_source_1) + len(shingles_source_2))*100
+		else:
+			return 0
 
 	def get_status(self, pub_1_line, pub_2_line):
 
@@ -95,7 +96,7 @@ class PubCompare():
 			pub_1_line.title_hashes,
 			pub_2_line['title_hashes'])*0.2
 
-		result = text_weight + title_weight
+		result = round(text_weight + title_weight)
 
 		for key, value in self.status.items():
 
@@ -112,7 +113,7 @@ class PubCompare():
 class Program():
 
 	def __init__(self):
-		self.pub_without_status_length = 1
+		self.pub_without_status_length = 400
 		self.retrospective_days_delta = 10
 		self.name = 'Поиск нечетких дубликатов'
 		self.file_name = 'pubcompare'
@@ -167,9 +168,9 @@ class Program():
 			status = 'Empty'
 
 		PubCompareStatus.objects.create(
-				status = status,
-				count = count
-			)
+			status = status,
+			count = count,
+		)
 
 	def __get_pub_without_status_min_date(self, pub_list):
 		return pub_list[0].date
@@ -178,7 +179,7 @@ class Program():
 		pub_list = NormalizePublication.objects.filter(
 			status__isnull=True).exclude(
 			title_hashes={}).order_by(
-			'CopyPublication__date')[:self.pub_without_status_length]
+			'pubdate')[:self.pub_without_status_length]
 		return pub_list
 
 	def __get_unique_publications_min_date(self, pub_without_status_min_date):
@@ -191,8 +192,8 @@ class Program():
 			pub_without_status_min_date)
 
 		pub_unique = NormalizePublication.objects.filter(
-			date__gt=min_date_unique,
-			date__lt=pub_without_status_min_date,
+			CopyPublication__date__gt=min_date_unique,
+			CopyPublication__date__lt=pub_without_status_min_date,
 			status=PubCompare().status['unique']['db_value']
 		).values('id', 'title_hashes', 'text_hashes')
 
@@ -220,8 +221,7 @@ class Program():
 
 		bulk_update(publications)
 
-		return len(publications)
-
+		self.save_status(len(publications))
 
 	def __search_status(self, publications, unique_publications):
 		for publication in publications:
@@ -232,7 +232,6 @@ class Program():
 		if len(unique_publications) > 0:
 			for unique_publication in unique_publications:
 				result = PubCompare().get_status(publication, unique_publication)
-				print (result['coefficient'])
 				if result['status'] == 'reprint':
 					publication.status = PubCompare().status['reprint']['db_value']
 					publication.parent_id = unique_publication['id']

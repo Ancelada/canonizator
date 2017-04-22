@@ -10,8 +10,9 @@ from django_mysql.models import JSONField, Model
 ################
 # копия публикаци из
 class CopyPublication(Model):
-
-	name = models.CharField(max_length=512, blank=True, null=True, db_index=True)
+	crawler_id = models.BigIntegerField(blank=True, null=True, db_index=True)
+	name = models.CharField(max_length=512, blank=True, null=True)
+	name_cyrillic = models.CharField(max_length=512, blank=True, null=True)
 	title = models.CharField(max_length=1024, blank=True, null=True)
 	text = models.TextField()
 	date = models.DateTimeField(db_index=True)
@@ -35,8 +36,13 @@ class CopyPublicationError(Model):
 # нормализованные публикации
 class NormalizePublication(Model):
 
+	crawler_id = models.BigIntegerField(blank=True, null=True, db_index=True)
+	name = models.CharField(max_length=512, blank=True, null=True)
+	name_cyrillic = models.CharField(max_length=512, blank=True, null=True)
 	title = models.CharField(max_length=512, blank=True, null=True)
 	text = models.TextField()
+	author = models.CharField(max_length=512, blank=True, null=True, db_index=True)
+	pubdate = models.DateTimeField(db_index=True, null=True, blank=True)
 	CopyPublication = models.ForeignKey(CopyPublication, on_delete=models.CASCADE, blank=True, null=True)
 	title_words = JSONField()
 	text_words = JSONField()

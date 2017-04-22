@@ -7,6 +7,7 @@ from django.utils import timezone
 class Crawler(models.Model):
 	
 	name = models.CharField(max_length=512, blank=True, null=True)
+	name_cyrillic = models.CharField(max_length=512, blank=True, null=True)
 	file_name = models.CharField(max_length=512, blank=True, null=True)
 	imported = models.DateTimeField(default=timezone.now)
 
