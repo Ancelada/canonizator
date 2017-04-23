@@ -25,7 +25,7 @@ from mainapp.daemons.base import Base
 class Program:
 
 	def __init__(self):
-		self.publications_count = 10
+		self.publications_count = 400
 		self.name = 'Создание хешей публикаций'
 		self.file_name = 'make_hashes'
 		self.morth = pymorphy2.MorphAnalyzer()

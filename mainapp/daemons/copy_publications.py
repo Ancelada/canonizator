@@ -24,7 +24,7 @@ from mainapp.daemons.base import Base
 class Program:
 
 	def __init__(self):
-		self.publications_count = 10
+		self.publications_count = 400
 		self.name = 'Копирование'
 		self.file_name = 'copy_publications'
 		self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

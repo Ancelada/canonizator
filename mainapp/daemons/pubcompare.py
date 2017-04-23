@@ -113,7 +113,7 @@ class PubCompare():
 class Program():
 
 	def __init__(self):
-		self.pub_without_status_length = 400
+		self.pub_without_status_length = 100
 		self.retrospective_days_delta = 10
 		self.name = 'Поиск нечетких дубликатов'
 		self.file_name = 'pubcompare'
@@ -173,7 +173,7 @@ class Program():
 		)
 
 	def __get_pub_without_status_min_date(self, pub_list):
-		return pub_list[0].date
+		return pub_list[0].pubdate
 
 	def get_pub_without_status(self):
 		pub_list = NormalizePublication.objects.filter(
@@ -192,8 +192,8 @@ class Program():
 			pub_without_status_min_date)
 
 		pub_unique = NormalizePublication.objects.filter(
-			CopyPublication__date__gt=min_date_unique,
-			CopyPublication__date__lt=pub_without_status_min_date,
+			pubdate__gt=min_date_unique,
+			pubdate__lt=pub_without_status_min_date,
 			status=PubCompare().status['unique']['db_value']
 		).values('id', 'title_hashes', 'text_hashes')
 
@@ -242,6 +242,7 @@ class Program():
 					break
 			if publication.status == None:
 				publication.status = PubCompare().status['unique']['db_value']
+				self.__add_publication_in_unique_publications(publication, unique_publications)
 		else:
 			publication.status = PubCompare().status['unique']['db_value']
 			self.__add_publication_in_unique_publications(publication, unique_publications)
@@ -252,6 +253,9 @@ class Program():
 			'title_hashes': publication.title_hashes,
 			'text_hashes': publication.text_hashes,
 		})
+
+	def clear_statuses(self):
+		NormalizePublication.objects.exclude(status__isnull=True).update(status=None)
 
 	########################################
 	# запуск программы

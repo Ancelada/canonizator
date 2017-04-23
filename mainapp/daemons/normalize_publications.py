@@ -61,6 +61,28 @@ class Program:
 			'UNKN'
 		}
 
+		self.grammems_to_remove_vocabulary = {
+			'NPRO': [],
+			'PRED': [],
+			'PREP': [],
+			'CONJ': [],
+			'PRCL': [],
+			'INTJ': [],
+			'ROMN': [],
+			'UNKN': [],			
+		}
+
+		self.grammems_to_remove_models = {
+			'NPRO': NPRO,
+			'PRED': PRED,
+			'PREP': PREP,
+			'CONJ': CONJ,
+			'PRCL': PRCL,
+			'INTJ': INTJ,
+			'ROMN': ROMN,
+			'UNKN': UNKN,
+		}
+
 		self.vocabulary = {
             'NOUN': [],
             'ADJF': [],
@@ -126,6 +148,9 @@ class Program:
 		self.__remove_doubles(self.vocabulary)
 		self.__remove_already_have(self.vocabulary)
 		self.__add_vocabulary_to_db(self.vocabulary)
+		# записываем граммемы to remove
+		self.__remove_already_have_grammems_to_remove(self.grammems_to_remove_vocabulary)
+		self.__add_vocabulary_grammems_to_remove_to_db(self.grammems_to_remove_vocabulary)
 
 
 	#### функция удаления дубликатов значений списков в словаре
@@ -133,13 +158,29 @@ class Program:
 		for key in vocabulary:
 			vocabulary[key] = list(unique_everseen(vocabulary[key]))
 
+	### функция удаления уже имеющихся в БД
+	def __remove_already_have_grammems_to_remove(self, grammems_to_remove):
+		
+		Base().connection()
+
+		for key, value in grammems_to_remove.items():
+			doubles = self.grammems_to_remove_models[key].objects.filter(
+				crc32__in=[word['crc32'] for word in grammems_to_remove[key]]).values('crc32')
+
+			for double in doubles:
+				for key2, word in enumerate(value):
+					if word['crc32'] == double['crc32']:
+						del value[key2]
+						break
+
 	#### функция удаления уже имеющихся в БД
 	def __remove_already_have(self, vocabulary):
 
 		Base().connection()
 
 		for key, value in vocabulary.items():
-			doubles = self.voc_models[key].objects.filter(name__in=vocabulary[key]).values('name')
+			doubles = self.voc_models[key].objects.filter(
+				name__in=vocabulary[key]).values('name')
 			for double in doubles:
 				self.__remove_from_array_by_value(vocabulary[key], double['name'])
 
@@ -147,6 +188,26 @@ class Program:
 	def __remove_from_array_by_value(self, array, value):
 		if value in array:
 			array.remove(value)
+
+	##### добавление в БД списков частей речи на удаление
+	def __add_vocabulary_grammems_to_remove_to_db(self, grammems_to_remove):
+
+		Base().connection()
+
+		for key in grammems_to_remove:
+			words = []
+			for word in grammems_to_remove[key]:
+				words.append(self.grammems_to_remove_models[key](
+					name=word['word'],
+					crc32=word['crc32'],
+					lft=0,
+					rght=0,
+					level=0,
+					tree_id=0,
+				))
+			if len(words) > 0:
+				now = timezone.now()
+				self.grammems_to_remove_models[key].objects.bulk_create(words)
 
 	##### добавление в БД списков частей речи
 	def __add_vocabulary_to_db(self, vocabulary):
@@ -288,7 +349,19 @@ class Program:
 					exp_voc_list[pos] = [word_crc_32]
 				else:
 					exp_voc_list[pos].append(word_crc_32)
+			# заполняем словарь частей речи, не учавствующих в разборе нечетких дублей
+			else:
+				
+				normalized_word = self.normalize_word(word_parsed_to_morph)
+				word_crc_32 = self.__convert_crc32(normalized_word)
 
+				pos = str(word_parsed_to_morph.tag.POS)
+
+				if not any(voc_word['word'] == normalized_word \
+				 for voc_word in self.grammems_to_remove_vocabulary[pos]):
+					self.grammems_to_remove_vocabulary[pos].append({
+						'word': normalized_word, 'crc32': word_crc_32
+					})
 
 	def save(self, normalized_list):
 
@@ -319,22 +392,23 @@ class Program:
 	########################################
 	# запуск программы
 	def run_daemon(self):
-		try:
-			self.context.open()
-			with self.context:
-				while True:
-					Base().update_working_status(self, 'waiting')
-					can_program = Base().can_program(self)
-					if can_program:
-						Base().update_working_status(self, 'working')
-						self.start()
-						Base().update_working_status(self, 'waiting')
-						Base().update_pidfile(self)
-						time.sleep(300)
-					else:
-						time.sleep(300)
-		except Exception:
-			self.save_error()
+		self.start()
+		# try:
+		# 	self.context.open()
+		# 	with self.context:
+		# 		while True:
+		# 			Base().update_working_status(self, 'waiting')
+		# 			can_program = Base().can_program(self)
+		# 			if can_program:
+		# 				Base().update_working_status(self, 'working')
+		# 				self.start()
+		# 				Base().update_working_status(self, 'waiting')
+		# 				Base().update_pidfile(self)
+		# 				time.sleep(300)
+		# 			else:
+		# 				time.sleep(300)
+		# except Exception:
+		# 	self.save_error()
 
 	def get_pid(self):
 
@@ -354,3 +428,5 @@ class Program:
 				os.remove(os.path.join(directory, '{0}.pid'.format(self.file_name)))
 				return None
     #############################################
+
+a = Program().run_daemon()

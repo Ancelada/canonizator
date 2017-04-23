@@ -30,7 +30,7 @@ class Program:
 		self.statuses_dir = os.path.join(self.base_dir, 'daemons/statuses')
 		self.context = Base().create_daemon_context(self.file_name)
 
-		self.list_value = 10
+		self.list_value = 40
 		self.voc_models = {
         	'NOUN': NOUN,
             'ADJF': ADJF,

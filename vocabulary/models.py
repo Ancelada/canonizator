@@ -12,7 +12,7 @@ from django_mysql.models import Model
 class NOUN(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -31,7 +31,7 @@ mptt.register(NOUN, order_insertion_by=['name'])
 class ADJF(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -48,7 +48,7 @@ class ADJF(MPTTModel):
 class ADJS(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -65,7 +65,7 @@ class ADJS(MPTTModel):
 class COMP(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -82,7 +82,7 @@ class COMP(MPTTModel):
 class VERB(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -99,7 +99,7 @@ class VERB(MPTTModel):
 class INFN(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -116,7 +116,7 @@ class INFN(MPTTModel):
 class PRTF(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -133,7 +133,7 @@ class PRTF(MPTTModel):
 class PRTS(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -150,7 +150,7 @@ class PRTS(MPTTModel):
 class GRND(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -167,7 +167,7 @@ class GRND(MPTTModel):
 class NUMR(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -184,7 +184,7 @@ class NUMR(MPTTModel):
 class ADVB(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -201,7 +201,7 @@ class ADVB(MPTTModel):
 class LATN(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -218,7 +218,7 @@ class LATN(MPTTModel):
 class NUMB(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -235,7 +235,7 @@ class NUMB(MPTTModel):
 class intg(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -252,7 +252,7 @@ class intg(MPTTModel):
 class real(MPTTModel):
 
 	class MPTTMeta:
-		order_insertion_by = ['name']
+		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
@@ -265,6 +265,150 @@ class real(MPTTModel):
 	def __str__(self):
 		return self.name
 
+############################################################
+### неосновные грамемы
+############################################################
+
+
+# местоимение
+class NPRO(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+# предикатив
+class PRED(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+# предлог
+class PREP(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name	
+		
+# союз
+class CONJ(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+# частица
+class PRCL(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+# междометие
+class INTJ(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+# римское число
+class ROMN(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name 
+
+
+# не удалось разобрать
+class UNKN(MPTTModel):
+
+	class MPTTMeta:
+		order_insertion_by = ['crc32']
+	name = models.CharField(max_length=512)
+	crc32 = models.BigIntegerField(default=0, db_index=True)
+	vikidict_scaned = models.BooleanField(default=False)
+	parent = TreeForeignKey('self', blank=True, null=True, \
+	 related_name='children', db_index=True)
+	date = models.DateTimeField(default=timezone.now)
+
+	tree = TreeManager()
+
+	def __str__(self):
+		return self.name
+
+
+#############################################################
 class VocabularyStatus(Model):
 
 	status = models.CharField(max_length=256, blank=True, null=True)

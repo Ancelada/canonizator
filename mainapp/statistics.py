@@ -6,7 +6,7 @@ from itertools import groupby
 
 from django.utils import timezone
 from django.conf import settings
-
+from django.db.models import Count
 
 
 from .models import *
@@ -137,6 +137,12 @@ class Statistics:
 			timezone.now()-datetime.timedelta(days=1),
 			timezone.now(),
 		]
+
+		self.statuses = {
+			1: 'Уникальных',
+			2: 'Перепечаток',
+			3: 'Скопированных',
+		}
 
 	def __get_group_statistic_by_date(self, start_date):
 
@@ -287,11 +293,11 @@ class Statistics:
 		statistics = []
 
 		# статистика всего публикаций в менеджере, к скопироанному канонизатором
-		manager_publications_count = Publication.objects.using(	'manager').values(
-			'title', 'text', 'date', 'crawler_id').distinct().count()
+		manager_publications_count = Publication.objects.using(	'manager').all().values(
+			'id').count()
 
-		copy_publication_count = CopyPublication.objects.values(
-			'name', 'title', 'text', 'date').distinct().count()
+		copy_publication_count = CopyPublication.objects.all().values(
+			'id').count()
 
 		normalize_publication_count = NormalizePublication.objects.all().values('id').count()
 
@@ -316,4 +322,20 @@ class Statistics:
 		return statistics
 
 	def build_statistics_pubcompare(self):
-		pass
+
+		statuses = NormalizePublication.objects.exclude(
+			status__isnull=True).values('status').annotate(Count('status'))
+
+		chart_array = []
+		chart_array.append(['статус', 'количество публикаций'])
+
+		for status in statuses:
+			chart_array.append([self.statuses[status['status']], status['status__count']])
+
+		name = 'Разобранные статусы, количество'
+
+		return {
+			'name': name,
+			'chart_array': chart_array,
+			'id': 'statuses',
+		}

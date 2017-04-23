@@ -27,15 +27,16 @@ def statistics(request):
 			'statistics': Statistics().build_copy_and_normalize_publications_statistics(),
 		}))
 
-		# статистика поиска нечетких дублей
-		elems.append(render_to_string('statistics_pubcompare.html', {
-			'statistics_pubcompare': Statistics().build_statistics_pubcompare(),
-		}))
-
 		#общая статистика
 		elems.append(render_to_string('statistics_common.html', {
 			'statistics_common': Statistics().build_common_statistics(),		
 		}))
+
+		# статистика поиска нечетких дублей
+		elems.append(render_to_string('statistics_pubcompare.html', {
+			'statistics_pubcompare': Statistics().build_statistics_pubcompare(),
+		}))
+		
 		args['central_panel'] = Base().central_panel(elems)
 
 		#левая панель
