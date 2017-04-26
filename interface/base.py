@@ -13,6 +13,18 @@ class Base:
 	def right_panel(self, elems):
 		return render_to_string('right_panel.html', {'elems' : elems})
 
+
+	def build_right_panel_elems(self, request):
+		elems = []
+		elems.append(render_to_string('textline.html', \
+		 {'text': Base().username(request)}))
+		elems.append(render_to_string('link.html', { \
+			'url': '/{0}/logout/'.format('canonizator'), 'text': 'выйти'}))
+		elems.append(render_to_string('link.html', \
+		 {'url': '/{0}/login/'.format('canonizator'), 'text': 'войти'}))
+		return elems
+
+
 	def page(self, request, args):
 		return render(request, 'page.html', args)
 

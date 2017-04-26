@@ -1,0 +1,44 @@
+<table>
+	<thead>
+		<tr>
+			<th>№ Пп</th>
+			<th  width="400">Слово</th>
+			<th>Отлож.</th>
+			<th>Полож.</th>
+			<th>Неитр.</th>
+			<th>Отриц.</th>
+			<th>Некорр.</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for word in words %}
+			<tr class="word_line" data-id="{{word.id}}" data-url="{{grammem}}">
+				<td>
+					{{forloop.counter}}
+				</td>
+				<td>
+					{{word.name|truncatechars:30}}
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="remind" class="word_radio">
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="positive" class="word_radio">
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="neitral" class="word_radio">
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="negative" class="word_radio">
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="incorrect" class="word_radio">
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<div class="large-12 small-12 columns nopadding">
+	<button id="submit_words">отправить</button>
+</div>

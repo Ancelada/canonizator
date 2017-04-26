@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import models
 import mptt
@@ -19,6 +20,8 @@ class NOUN(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -38,6 +41,8 @@ class ADJF(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -55,6 +60,8 @@ class ADJS(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -72,6 +79,8 @@ class COMP(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -89,6 +98,8 @@ class VERB(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -106,6 +117,8 @@ class INFN(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -123,6 +136,8 @@ class PRTF(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -140,6 +155,8 @@ class PRTS(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -157,6 +174,8 @@ class GRND(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -174,6 +193,8 @@ class NUMR(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -191,6 +212,8 @@ class ADVB(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -208,6 +231,8 @@ class LATN(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -225,6 +250,8 @@ class NUMB(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -242,6 +269,8 @@ class intg(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -259,6 +288,8 @@ class real(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -281,6 +312,8 @@ class NPRO(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -298,6 +331,8 @@ class PRED(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -315,6 +350,8 @@ class PREP(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -332,6 +369,8 @@ class CONJ(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -349,6 +388,8 @@ class PRCL(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -366,6 +407,8 @@ class INTJ(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -383,6 +426,8 @@ class ROMN(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 
@@ -401,6 +446,8 @@ class UNKN(MPTTModel):
 	parent = TreeForeignKey('self', blank=True, null=True, \
 	 related_name='children', db_index=True)
 	date = models.DateTimeField(default=timezone.now)
+	User = models.ForeignKey(User, blank=True, null=True)
+	Tone = models.IntegerField(blank=True, null=True)
 
 	tree = TreeManager()
 

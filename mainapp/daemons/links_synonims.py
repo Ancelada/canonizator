@@ -87,10 +87,11 @@ class Program:
 
 		Base().connection()
 
-		if count > 0:
+		if not count is None:
 			status = 'Ok'
 		else:
 			status = 'Empty'
+			count = 0
 
 		VocabularyStatus.objects.create(
 				status = status,

@@ -1,13 +1,23 @@
 import os
 import signal
+import json
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from .mainapp import MainApp
 from .statistics import Statistics
 from interface.base import Base
+from vocabulary.ajax import VocAjax
+
+def read_ajax(request):
+	if request.method == 'POST':
+		string = json.loads(request.body)
+		response = VocAjax().read_ajax(string, request)
+		if response != None:
+			return response
+
 
 def statistics(request):
 	if request.user.is_authenticated():
@@ -43,6 +53,7 @@ def statistics(request):
 		elems = []
 		elems.append(render_to_string('link.html', {'url': '/canonizator/', 'text': 'program manager'}))
 		elems.append(render_to_string('textline.html', { 'text': 'program statistics'}))
+		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
 		args['left_panel'] = Base().left_panel(elems)
 
 		#правая панель
@@ -79,6 +90,7 @@ def index(request):
 		elems.append(render_to_string('textline.html', {'text': 'program manager'}))
 		elems.append(render_to_string('link.html', { \
 			'url': '/statistics/', 'text': 'program statistics'}))
+		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
 		args['left_panel'] = Base().left_panel(elems)
 
 		#правая панель

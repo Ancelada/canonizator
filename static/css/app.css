@@ -1,5 +1,6 @@
 .left_panel, .right_panel, .central_panel{
 	min-height:100%;
+	margin-bottom:30px;
 }
 
 
@@ -23,10 +24,27 @@ td{
 	font-size: 14px;
 }
 
+tr{
+	cursor: pointer;
+}
+
+table tbody tr:nth-child(even):hover, table tbody tr:hover{
+	background-color:#ccc;
+}
+
 .color_alert{
 	color:red;
 }
 
 .color_success{
 	color:green;
+}
+
+button{
+	padding:5px;
+	background-color:#ccc;
+}
+
+button:hover{
+	background-color:#999;
 }

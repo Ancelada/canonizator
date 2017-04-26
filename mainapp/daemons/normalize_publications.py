@@ -27,7 +27,7 @@ from django.db.models import Max
 class Program:
 
 	def __init__(self):
-		self.list_value = 10
+		self.list_value = 400
 		self.name = 'Канонизация'
 		self.file_name = 'normalize_publications'
 		self.morth = pymorphy2.MorphAnalyzer()
@@ -137,6 +137,10 @@ class Program:
 			last_error = 'no status'
 		return last_error
 
+	def __clear_vocabulary(self, vocabulary):
+		for key, value in vocabulary.items():
+			del vocabulary[key][:]
+
 	def start(self):
 		last_pcopy = self.get_last_pcopy_id()
 		pcopy_list = self.get_pcopy_list(last_pcopy)
@@ -148,9 +152,14 @@ class Program:
 		self.__remove_doubles(self.vocabulary)
 		self.__remove_already_have(self.vocabulary)
 		self.__add_vocabulary_to_db(self.vocabulary)
+
+		self.__clear_vocabulary(self.vocabulary)
+
 		# записываем граммемы to remove
 		self.__remove_already_have_grammems_to_remove(self.grammems_to_remove_vocabulary)
 		self.__add_vocabulary_grammems_to_remove_to_db(self.grammems_to_remove_vocabulary)
+
+		self.__clear_vocabulary(self.grammems_to_remove_vocabulary)
 
 
 	#### функция удаления дубликатов значений списков в словаре
@@ -392,23 +401,22 @@ class Program:
 	########################################
 	# запуск программы
 	def run_daemon(self):
-		self.start()
-		# try:
-		# 	self.context.open()
-		# 	with self.context:
-		# 		while True:
-		# 			Base().update_working_status(self, 'waiting')
-		# 			can_program = Base().can_program(self)
-		# 			if can_program:
-		# 				Base().update_working_status(self, 'working')
-		# 				self.start()
-		# 				Base().update_working_status(self, 'waiting')
-		# 				Base().update_pidfile(self)
-		# 				time.sleep(300)
-		# 			else:
-		# 				time.sleep(300)
-		# except Exception:
-		# 	self.save_error()
+		try:
+			self.context.open()
+			with self.context:
+				while True:
+					Base().update_working_status(self, 'waiting')
+					can_program = Base().can_program(self)
+					if can_program:
+						Base().update_working_status(self, 'working')
+						self.start()
+						Base().update_working_status(self, 'waiting')
+						Base().update_pidfile(self)
+						time.sleep(300)
+					else:
+						time.sleep(300)
+		except Exception:
+			self.save_error()
 
 	def get_pid(self):
 
@@ -428,5 +436,3 @@ class Program:
 				os.remove(os.path.join(directory, '{0}.pid'.format(self.file_name)))
 				return None
     #############################################
-
-a = Program().run_daemon()
