@@ -166,3 +166,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #Session Management
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+SESSION_SAVE_EVERY_REQUEST=True

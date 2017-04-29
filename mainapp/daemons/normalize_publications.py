@@ -38,6 +38,27 @@ class Program:
 		self.context = Base().create_daemon_context(self.file_name)
 
 		self.punctuations = re.compile('([-_<>?/\\".„”“%,{}@#!&()=+:;«»—$&£*])')
+		self.replace_with_spaces = {
+			'\n',
+			'\r',
+			'\r\n',
+			'\v',
+			'\x0b',
+			'\f',
+			'\x0c',
+			'\x1c',
+			'\x1d',
+			'\x1e',
+			'\x85',
+			'\u2028',
+			'\u2029',
+			'<br>',
+			'<br />'
+			'<p>',
+			'</p>',
+			'...',
+			'\t'
+		}
 		self.copypublication_fields = [
 			'crawler_id',
 			'name',
@@ -262,9 +283,10 @@ class Program:
 			)
 
 	def remove_punctuation(self, string):
+		for key in self.replace_with_spaces:
+			string = string.replace(key, ' ')
 		string = re.sub(self.punctuations, '', string)
 		string = string.replace('ё', 'е')
-		string = ' '.join(string.splitlines())
 		return string
 
 	def split_line(self, line):

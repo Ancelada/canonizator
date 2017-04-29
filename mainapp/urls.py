@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^canonizator/program/stop/(?P<program_pid>[0-9]+)/$',
         views.stop, name='stop'),
     url(r'^statistics/$', views.statistics, name='statistics'),
-    url(r'^ajax/$', views.read_ajax)
+    url(r'^ajax/$', views.read_ajax, name='ajax'),
 ]

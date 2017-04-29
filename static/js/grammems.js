@@ -37,7 +37,7 @@ function readResponseGrammems(data, parameters){
 
 function Init(){
 	$.each($('.word_line'), function(){
-		words.push({'id': parseInt($(this).attr('data-id')), 'html': $(this), 'status': 'remind',
+		words.push({'id': parseInt($(this).attr('data-id')), 'status': 'remind',
 		'grammem_url': $(this).attr('data-url')});
 	});
 }

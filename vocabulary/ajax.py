@@ -36,14 +36,26 @@ class VocAjax():
 				VocabularyBase().grammems,
 			)
 			grammem_words = grammem_table.objects.filter(id__in=self.__get_list_of_words_ids(words))
+			synonims_of_grammem_words = grammem_table.objects.filter(
+				parent_id__in=self.__get_list_of_words_ids(words))
 
 			for grammem_word in grammem_words:
 				for word in words:
 					if grammem_word.id == word['id']:
+
+						for synonim in synonims_of_grammem_words:
+							if synonim.parent_id == word['id']:
+								synonim.Tone = self.statuses[word['status']]
+								synonim.User_id = request.user.id
+
 						grammem_word.Tone = self.statuses[word['status']]
 						grammem_word.User_id = request.user.id
 
 			bulk_update(grammem_words)
+
+			if synonims_of_grammem_words.exists():
+				bulk_update(synonims_of_grammem_words)
+
 			return JsonResponse({
 				'grammem_url': grammem_url,
 			})

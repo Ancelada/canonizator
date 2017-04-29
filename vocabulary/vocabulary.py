@@ -14,7 +14,7 @@ class Voc():
 			grammem['count'] = len(grammem['table'].objects.all().values('id'))
 
 			grammem['with_tone'] = len(
-				grammem['table'].objects.filter(Tone__isnull=False).values('id'))
+				grammem['table'].objects.filter(Tone__isnull=False, parent_id__isnull=True).values('id'))
 		return render_to_string('grammems.html', {
 			'grammems': grammems,			
 		})
