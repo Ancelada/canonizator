@@ -20,8 +20,6 @@ class Base:
 		 {'text': Base().username(request)}))
 		elems.append(render_to_string('link.html', { \
 			'url': '/{0}/logout/'.format('canonizator'), 'text': 'выйти'}))
-		elems.append(render_to_string('link.html', \
-		 {'url': '/{0}/login/'.format('canonizator'), 'text': 'войти'}))
 		return elems
 
 

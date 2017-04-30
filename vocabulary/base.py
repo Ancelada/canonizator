@@ -2,6 +2,7 @@ from .models import *
 
 class Base():
 	def __init__(self):
+
 		self.grammems = [
 			{
 				'name': 'NOUN',

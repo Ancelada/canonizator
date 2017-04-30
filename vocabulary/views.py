@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
@@ -16,7 +16,7 @@ def grammems(request):
 		elems = []
 
 		# статистика поиска нечетких дублей
-		elems.append(Voc().build_table(VocabularyBase().grammems))
+		elems.append(Voc().build_table(VocabularyBase().grammems, request.user.id))
 		args['central_panel'] = Base().central_panel(elems)
 
 		#левая панель
@@ -26,8 +26,9 @@ def grammems(request):
 		elems.append(render_to_string('link.html', {
 		 'url': '/statistics/', 'text': 'program statistics'}))
 		elems.append(render_to_string('textline.html', {'text': 'grammems'}))
+		elems.append(render_to_string('link.html', {
+				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
 		args['left_panel'] = Base().left_panel(elems)
-
 		#правая панель
 		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
 
@@ -58,8 +59,9 @@ def grammem(request, grammem):
 			elems.append(render_to_string('textline.html', {
 				'text': grammem,	
 			}))
-
 			elems.append(render_to_string('textline.html', {'text': 'grammems'}))
+			elems.append(render_to_string('link.html', {
+				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
 			args['left_panel'] = Base().left_panel(elems)
 
 			#правая панель
@@ -67,5 +69,33 @@ def grammem(request, grammem):
 			return Base().page(request, args)
 		else:
 			raise Http404
+	else:
+		return redirect('/{0}/login/'.format('canonizator'))
+
+def tonestatistics(request):
+	if request.user.is_authenticated():
+		args = {}
+
+		#центральная панель
+		elems = []
+		elems.append(render_to_string('tonestatistics.html', {
+			'statistics': Voc().build_tone_statistics(VocabularyBase().grammems)
+		}))
+		args['central_panel'] = Base().central_panel(elems)
+
+		#левая панель
+		elems = []
+		elems.append(render_to_string('link.html', {
+			'url': '/canonizator/', 'text': 'program manager'}))
+		elems.append(render_to_string('link.html', {
+		 'url': '/statistics/', 'text': 'program statistics'}))
+		elems.append(render_to_string('link.html', {
+			'url': '/vocabulary/grammems/', 'text': 'grammems'}))
+		elems.append(render_to_string('textline.html', {'text': 'tone statistics'}))
+		args['left_panel'] = Base().left_panel(elems)
+
+		#правая панель
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
+		return Base().page(request, args)
 	else:
 		return redirect('/{0}/login/'.format('canonizator'))

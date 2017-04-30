@@ -54,6 +54,8 @@ def statistics(request):
 		elems.append(render_to_string('link.html', {'url': '/canonizator/', 'text': 'program manager'}))
 		elems.append(render_to_string('textline.html', { 'text': 'program statistics'}))
 		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
+		elems.append(render_to_string('link.html', {
+				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
 		args['left_panel'] = Base().left_panel(elems)
 
 		#правая панель
@@ -91,6 +93,8 @@ def index(request):
 		elems.append(render_to_string('link.html', { \
 			'url': '/statistics/', 'text': 'program statistics'}))
 		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
+		elems.append(render_to_string('link.html', {
+				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
 		args['left_panel'] = Base().left_panel(elems)
 
 		#правая панель
