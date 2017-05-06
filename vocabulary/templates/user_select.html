@@ -1,0 +1,24 @@
+<table>
+	<thead>
+		<tr>
+			<th>№ Пп</th>
+			<th>Пользователь</th>
+			<th>Количество</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+			<tr class="user_select" data-id="{{user.id}}">
+				<td>
+					{{forloop.counter}}
+				</td>
+				<td>
+					{{user.name}}
+				</td>
+				<td>
+					{{user.count}}
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

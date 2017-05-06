@@ -1,0 +1,20 @@
+<table>
+	<thead>
+		<tr>
+			<th>№ Пп</th>
+			<th>Кр. наим</th>
+			<th>Значение</th>
+			<th>Разобранных</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for grammem in grammems %}
+			<tr class="user_grammems" data-user="{{user_id}}" data-grammem="{{grammem.url}}">
+				<td>{{forloop.counter}}</td>
+				<td>{{grammem.name}}</td>
+				<td>{{grammem.name_rus}}</td>
+				<td>{{grammem.count}}</td>
+			</tr>
+		{% endfor %}		
+	</tbody>
+</table>

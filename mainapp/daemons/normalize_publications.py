@@ -57,7 +57,8 @@ class Program:
 			'<p>',
 			'</p>',
 			'...',
-			'\t'
+			'\t',
+			'\xa0',
 		}
 		self.copypublication_fields = [
 			'crawler_id',

@@ -17,8 +17,8 @@ $('.choose_grammem').on('click', function(){
 //изменить значение radio
 $('.word_radio').on('change', function(){
 	word_id = parseInt($(this).attr('data-id'));
-	status = $(this).val();
-	addStatus(status, word_id)
+	word_tone = parseInt($(this).attr('data-tone'));
+	addStatus(word_tone, word_id)
 });
 
 function addStatus(status, word_id){
@@ -37,7 +37,7 @@ function readResponseGrammems(data, parameters){
 
 function Init(){
 	$.each($('.word_line'), function(){
-		words.push({'id': parseInt($(this).attr('data-id')), 'status': 'remind',
+		words.push({'id': parseInt($(this).attr('data-id')), 'status': false,
 		'grammem_url': $(this).attr('data-url')});
 	});
 }

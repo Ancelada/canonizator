@@ -12,6 +12,13 @@ class Voc():
 			-1: 'negative',
 			-2: 'incorrect',
 		}
+		self.statuses_colors={
+			None: 'remind',
+			1: '#1b9e77',
+			0: '#7570b3',
+			-1: '#d95f02',
+			-2: 'gold',
+		}
 		self.diagram_columns = [
 			'name',
 			'positive',
@@ -30,10 +37,10 @@ class Voc():
 			grammem['count'] = len(grammem['table'].objects.all().values('id'))
 
 			grammem['with_tone'] = len(
-				grammem['table'].objects.filter(Tone__isnull=False, parent_id__isnull=True).values('id'))
+				grammem['table'].objects.filter(Tone__isnull=False).values('id'))
 
 			grammem['with_tone_by_user'] = len(
-				grammem['table'].objects.filter(Tone__isnull=False).values('id'))
+				grammem['table'].objects.filter(Tone__isnull=False, User_id=user_id).values('id'))
 
 		return render_to_string('grammems.html', {
 			'grammems': grammems,			
@@ -67,7 +74,6 @@ class Voc():
 	def __add_tones_to_users(self, statistics):
 		result = {}
 		for statistic in statistics:
-			print (statistic)
 			if not statistic['name'] in result:
 				result[statistic['name']] = []
 				result[statistic['name']].append({
@@ -87,7 +93,6 @@ class Voc():
 				else:
 					count = [res for res in result[statistic['name']] if res['tone'] == statistic['Tone']][0]
 					count['count'] += statistic['Tone__count']
-		print ('------------------')
 		return result
 
 	def build_tone_statistics(self, grammems):
@@ -129,5 +134,102 @@ class Voc():
 				chart_array_line['data'].append(subline)
 
 			chart_array.append(chart_array_line)
-		print (chart_array)
 		return chart_array
+
+	def build_tone_statistics_common(self, grammems):
+		chart_array = []
+		for grammem in grammems:
+			statistics = list(grammem['table'].objects.filter(Tone__isnull=False).values(
+				'Tone',
+			).annotate(Count('Tone')))
+
+			chart_array_line = {
+				'name': grammem['name'],
+				'name_rus': grammem['name_rus'],
+				'data': [],
+				'id': 'common_{0}'.format(grammem['name']),
+			}
+
+			chart_array_line['data'].append(['tone', 'count', {'role': 'style'}])
+
+			for key, value in self.statuses.items():
+				if any(key == statistic['Tone'] for statistic in statistics):
+
+					filtered = [statistic['Tone__count'] for statistic in statistics \
+						 if statistic['Tone'] == key]
+
+					count = 0
+
+					for filtered_value in filtered:
+						count+= filtered_value
+
+					chart_array_line['data'].append([
+						value,
+						count,
+						self.statuses_colors[key],
+					])
+			chart_array.append(chart_array_line)
+		return chart_array
+
+	def build_user_select_table(self, users, grammems):
+		result = []
+		for user in users:
+
+			result_line = {'name': user.username, 'id': user.id, 'count': 0}
+
+			for grammem in grammems:
+				grammem_count = len(grammem['table'].objects.filter(
+					Tone__isnull=False, User_id=user.id).values('id'))
+				result_line['count']+=grammem_count
+
+			result.append(result_line)
+		return {'users': result}
+
+	def build_user_grammems(self, user_id, grammems):
+		result = []
+		for grammem in grammems:
+			grammem_count = len(grammem['table'].objects.filter(
+				Tone__isnull=False, User_id=user_id
+			).values('id'))
+			result_line = {
+				'name': grammem['name'],
+				'name_rus': grammem['name_rus'],
+				'count': grammem_count,
+				'url': grammem['url'],
+			}
+			result.append(result_line)
+		return {
+			'grammems': result,
+			'user_id': user_id,
+		}
+
+	def build_user_grammem(self, user_id, grammem, grammems, page):
+		
+		offset = int(page)*10
+
+		grammem_table = [gr for gr in grammems if gr['url'] == grammem][0]['table']
+
+		result = {}
+
+		result['words'] = list(grammem_table.objects.filter(
+			User_id=user_id,
+			parent_id__isnull=True,
+		).values('name', 'Tone', 'id')[offset:10+offset])
+
+		result['user_id'] = user_id
+		result['url'] = grammem
+		result['name_rus'] = [gr for gr in grammems if gr['url'] == grammem][0]['name_rus']
+		result['name'] = [gr for gr in grammems if gr['url'] == grammem][0]['name']
+		result['page'] = int(page)
+
+		max_page_no = int(
+			len(grammem_table.objects.filter(User_id=user_id, parent_id__isnull=True).values('id'))/10)+1
+
+		result['pages'] = []
+		for page_no in range(0, max_page_no, 1):
+			if page_no == int(page):
+				result['pages'].append({'no': page_no, 'selected': 1})
+			else:
+				result['pages'].append({'no': page_no, 'selected': 0})
+
+		return result

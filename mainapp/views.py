@@ -18,23 +18,21 @@ def read_ajax(request):
 		if response != None:
 			return response
 
-
-def statistics(request):
+def common_statistics(request):
 	if request.user.is_authenticated():
-
 		args = {}
 
 		#центральная панель
 		elems = []
 
-		# статистика словарей
-		elems.append(render_to_string('statistics_vocabulary.html', {
-			'vocabulary_statistics': Statistics().build_vocabulary_statistics(),			
-		}))
-
-		# статистика по дням
+		# статистика скопированных и нормализованных по дням
 		elems.append(render_to_string('statistics.html', {
 			'statistics': Statistics().build_copy_and_normalize_publications_statistics(),
+		}))
+
+		# статистика поиска нечетких дублей
+		elems.append(render_to_string('statistics_pubcompare.html', {
+			'statistics_pubcompare': Statistics().build_statistics_pubcompare(),
 		}))
 
 		#общая статистика
@@ -42,35 +40,38 @@ def statistics(request):
 			'statistics_common': Statistics().build_common_statistics(),		
 		}))
 
-		# статистика поиска нечетких дублей
-		elems.append(render_to_string('statistics_pubcompare.html', {
-			'statistics_pubcompare': Statistics().build_statistics_pubcompare(),
-		}))
-		
 		args['central_panel'] = Base().central_panel(elems)
 
 		#левая панель
-		elems = []
-		elems.append(render_to_string('link.html', {'url': '/canonizator/', 'text': 'program manager'}))
-		elems.append(render_to_string('textline.html', { 'text': 'program statistics'}))
-		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
-		elems.append(render_to_string('link.html', {
-				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
-		args['left_panel'] = Base().left_panel(elems)
+		args['left_panel'] = Base().left_panel(Base().build_left_panel_links(
+			'common statistics'))
 
 		#правая панель
-		elems = []
-		elems.append(render_to_string('textline.html', \
-		 {'text': Base().username(request)}))
-		elems.append(render_to_string('link.html', { \
-			'url': '/{0}/logout/'.format('canonizator'), 'text': 'выйти'}))
-		elems.append(render_to_string('link.html', \
-		 {'url': '/{0}/login/'.format('canonizator'), 'text': 'войти'}))
-		args['right_panel'] = Base().right_panel(elems)
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
 		return Base().page(request, args)
 	else:
 		return redirect('/{0}/login/'.format('canonizator'))
 
+def vocabulary_statistics(request):
+	if request.user.is_authenticated():
+		args = {}
+		
+		#центральная панель
+		elems = []
+		# статистика словарей
+		elems.append(render_to_string('statistics_vocabulary.html', {
+			'vocabulary_statistics': Statistics().build_vocabulary_statistics(),			
+		}))
+		args['central_panel'] = Base().central_panel(elems)
+
+		#левая панель
+		args['left_panel'] = Base().left_panel(Base().build_left_panel_links('vocabulary statistics'))
+
+		#правая панель
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
+		return Base().page(request, args)
+	else:
+		return redirect('/{0}/login/'.format('canonizator'))
 
 
 def index(request):
@@ -88,24 +89,10 @@ def index(request):
 		args['central_panel'] = Base().central_panel(elems)
 
 		#левая панель
-		elems = []
-		elems.append(render_to_string('textline.html', {'text': 'program manager'}))
-		elems.append(render_to_string('link.html', { \
-			'url': '/statistics/', 'text': 'program statistics'}))
-		elems.append(render_to_string('link.html', {'url': '/vocabulary/grammems/', 'text': 'grammems'}))
-		elems.append(render_to_string('link.html', {
-				'url': '/vocabulary/tonestatistics/', 'text': 'tone statistics'}))
-		args['left_panel'] = Base().left_panel(elems)
+		args['left_panel'] = Base().left_panel(Base().build_left_panel_links('program manager'))
 
 		#правая панель
-		elems = []
-		elems.append(render_to_string('textline.html', \
-		 {'text': Base().username(request)}))
-		elems.append(render_to_string('link.html', { \
-			'url': '/{0}/logout/'.format('canonizator'), 'text': 'выйти'}))
-		elems.append(render_to_string('link.html', \
-		 {'url': '/{0}/login/'.format('canonizator'), 'text': 'войти'}))
-		args['right_panel'] = Base().right_panel(elems)
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
 		return Base().page(request, args)
 	else:
 		return redirect('/{0}/login/'.format('canonizator'))

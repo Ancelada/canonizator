@@ -3,7 +3,7 @@
 		<tr>
 			<th>№ Пп</th>
 			<th  width="400">Слово</th>
-			<th>Отлож.</th>
+			<!-- <th>Отлож.</th> -->
 			<th>Полож.</th>
 			<th>Неитр.</th>
 			<th>Отриц.</th>
@@ -19,20 +19,20 @@
 				<td>
 					{{word.name|truncatechars:30}}
 				</td>
-				<td>
+				<!-- <td>
 					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="remind" class="word_radio">
+				</td> -->
+				<td>
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" data-tone="1" class="word_radio">
 				</td>
 				<td>
-					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="positive" class="word_radio">
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" data-tone="0" class="word_radio">
 				</td>
 				<td>
-					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="neitral" class="word_radio">
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" data-tone="-1" class="word_radio">
 				</td>
 				<td>
-					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="negative" class="word_radio">
-				</td>
-				<td>
-					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" value="incorrect" class="word_radio">
+					<input type="radio" name="{{word.id}}" data-id="{{word.id}}" data-tone="-2" class="word_radio">
 				</td>
 			</tr>
 		{% endfor %}

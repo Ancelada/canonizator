@@ -32,7 +32,11 @@
   <script src="{% static 'js/statistics_common.js' %}"></script>
   <script src="{% static 'js/statistics_pubcompare.js' %}"></script>
   <script src="{% static 'js/tonestatistics.js' %}"></script>
+  <script src="{% static 'js/tonestatistics_common.js' %}"></script>
   <script src="{% static 'js/grammems.js' %}"></script>
+  <script src="{% static 'js/user_select.js' %}"></script>
+  <script src="{% static 'js/user_grammems.js' %}"></script>
+  <script src="{% static 'js/user_grammem.js' %}"></script>
   <script>
 
     //ajax заппрос
@@ -49,6 +53,7 @@
           async: true,
           success: function(data, textStatus, jqXHR){
             readResponseGrammems(data, parameters);
+            userGrammemReadAjax(data, parameters);
           }
       });
     }

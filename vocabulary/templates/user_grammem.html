@@ -1,0 +1,92 @@
+<div class="large-12 small-12 columns nopadding">
+	<h1>{{name}} {{name_rus}}</h1>
+</div>
+<table>
+	<thead>
+		<tr>
+			<th>№ Пп</th>
+			<th>Слово</th>
+			<th>Полож.</th>
+			<th>Неитр.</th>
+			<th>Отриц.</th>
+			<th>Некорр.</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for word in words %}
+			<tr>
+				<td>
+					{{forloop.counter}}
+				</td>
+				<td>
+					{{word.name}}
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" class="word_tone_change" data-tone="1" data-id="{{word.id}}" id="positive"
+					{% if word.Tone == 1 %}
+						checked="checked"
+					{% endif %}
+					>
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" class="word_tone_change" data-tone="0" data-id="{{word.id}}" id="neitral"
+					{% if word.Tone == 0 %}
+						checked="checked"
+					{% endif %}
+					>
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" class="word_tone_change" data-tone="-1" data-id="{{word.id}}" id="negative"
+					{% if word.Tone == -1 %}
+						checked="checked"
+					{% endif %}
+					>
+				</td>
+				<td>
+					<input type="radio" name="{{word.id}}" class="word_tone_change" data-tone="-2" data-id="{{word.id}}" id="incorrect"
+					{% if word.Tone == -2 %}
+						checked="checked"
+					{% endif %}
+					>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<div class="large-12 small-12 columns nopadding">
+	<button id="user_grammem_save">Сохранить</button>
+</div>
+<div class="large-12 small-12 columns nopadding">
+	<a href="/vocabulary/user_grammem/{{user_id}}/{{url}}/
+		{% if page != 0 %}
+			{{page|add:"-1"}}/
+		{% else%}
+			0
+		{% endif%}">
+		<button>Пред.</button>
+	</a>
+
+	<a href="/vocabulary/user_grammem/{{user_id}}/{{url}}/
+		{% if page != pages|length|add:"-1" %}
+			{{page|add:"1"}}/
+		{% else %}
+			{{pages|length|add:"-1"}}
+		{% endif%}
+	">
+		<button>След.</button>
+	</a>
+</div>
+<div class="large-12 small-12 columns nopadding">
+	{% for page_item in pages %}
+		<a href="/vocabulary/user_grammem/{{user_id}}/{{url}}/{{page_item.no}}"><button
+		{% if page_item.no == page %}
+			class="button_selected"
+		{% endif %}
+		>{{page_item.no}}</button></a>
+	{% endfor %}
+</div>
+
+<script>
+	var grammem_url = '{{url}}';
+	var words_list = {{words|safe}};
+</script>
