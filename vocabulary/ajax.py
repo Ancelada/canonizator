@@ -8,13 +8,7 @@ from .models import *
 
 class VocAjax():
 	def __init__(self):
-		self.statuses = {
-			'remind': None,
-			'positive': 1,
-			'neitral': 0,
-			'negative': -1,
-			'incorrect': -2,
-		}
+		pass
 
 	def __get_list_of_words_ids(self, words):
 		result = []
@@ -78,28 +72,26 @@ class VocAjax():
 				grammem_url,
 				VocabularyBase().grammems,
 			)
-			print (words)
 
-			# grammem_words = grammem_table.objects.filter(id__in=self.__get_list_of_words_ids(words))
-			# synonims_of_grammem_words = grammem_table.objects.filter(
-			# 	parent_id__in=self.__get_list_of_words_ids(words))
+			grammem_words = grammem_table.objects.filter(id__in=self.__get_list_of_words_ids(words))
+			synonims_of_grammem_words = grammem_table.objects.filter(
+				parent_id__in=self.__get_list_of_words_ids(words))
 
-			# for grammem_word in grammem_words:
-			# 	for word in words:
-			# 		if grammem_word.id == word['id']:
+			for grammem_word in grammem_words:
+				for word in words:
+					if grammem_word.id == word['id']:
 
-			# 			for synonim in synonims_of_grammem_words:
-			# 				if synonim.parent_id == word['id']:
-			# 					synonim.Tone = self.statuses[word['status']]
-			# 					synonim.User_id = request.user.id
+						for synonim in synonims_of_grammem_words:
+							if synonim.parent_id == word['id']:
+								synonim.Tone = word['status']
+								synonim.User_id = request.user.id
+						grammem_word.Tone = word['status']
+						grammem_word.User_id = request.user.id
 
-			# 			grammem_word.Tone = self.statuses[word['status']]
-			# 			grammem_word.User_id = request.user.id
+			bulk_update(grammem_words)
 
-			# bulk_update(grammem_words)
-
-			# if synonims_of_grammem_words.exists():
-			# 	bulk_update(synonims_of_grammem_words)
+			if synonims_of_grammem_words.exists():
+				bulk_update(synonims_of_grammem_words)
 
 			return JsonResponse({
 				'grammem_url': grammem_url,
