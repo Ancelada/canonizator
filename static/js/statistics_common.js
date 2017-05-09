@@ -11,7 +11,7 @@ if (typeof statistics_common != 'undefined'){
 
 			var options = {
 				chart: {
-					title: statistics[i]['name'],
+					title: statistics_common[i]['name'],
 					subtitle: 'Статистика работы всех програм.'
 				}
 			}

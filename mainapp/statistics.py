@@ -144,64 +144,61 @@ class Statistics:
 			3: 'Скопированных',
 		}
 
-	def __get_group_statistic_by_date(self, start_date):
-
-		result = []
+	def __get_group_statistic_by_date(self, start_date, program_id):
 
 		for program in self.programs:
+			if program_id == program['id']:
 
-			result_line = {'name': program['name'], 'columns': [], 'id': program['id']}
+				result = {'name': program['name'], 'columns': [], 'id': program['id']}
 
-			for table in program['tables']:
+				for table in program['tables']:
 
-				table_lines = table['table'].objects.filter(date__gte=start_date)
+					table_lines = table['table'].objects.filter(date__gte=start_date)
 
-				for key, values in groupby(table_lines, key=lambda table_line: table_line.date.date()):
-					if not (any(line['date'] == key for line in result_line['columns'])):
-						result_line['columns'].append({
-							'date': key,
-							'Publication': [],
-							'Status': [],
-							'Error': [],
-						})
+					for key, values in groupby(table_lines, key=lambda table_line: table_line.date.date()):
+						if not (any(line['date'] == key for line in result['columns'])):
+							result['columns'].append({
+								'date': key,
+								'Publication': [],
+								'Status': [],
+								'Error': [],
+							})
 
-				for table_line in table_lines:
-					for line in result_line['columns']:
-						if line['date'] == table_line.date.date():
-							line[table['name']].append(table_line)
+					for table_line in table_lines:
+						for line in result['columns']:
+							if line['date'] == table_line.date.date():
+								line[table['name']].append(table_line)
 
-				for line in result_line['columns']:
-					line[table['name']] = len(line[table['name']])
-			result.append(result_line)
+					for line in result['columns']:
+						line[table['name']] = len(line[table['name']])
 
-		return result
+				return result
 
-	def build_copy_and_normalize_publications_statistics(self):
+	def build_copy_and_normalize_publications_statistics(self, program_id):
 
 		start_date  = (timezone.now()-datetime.timedelta(days=14))
 
 		start_date = start_date.replace(hour = 0, minute = 0, second = 0)
 
-		programs = self.__get_group_statistic_by_date(start_date)
+		program = self.__get_group_statistic_by_date(start_date, program_id)
 
-		for program in programs:
-			program['chart_array'] = [
-				['Дата', 'Публикаций', 'Успешных запросов', 'Ошибок']
-			]
-			for column in program['columns']:
-				program['chart_array'].append([
-					column['date'].strftime('%d-%m-%Y'),
-					column['Publication'],
-					column['Status'],
-					column['Error'],
-				])
-			del program['columns']
+		program['chart_array'] = [
+			['Дата', 'Публикаций', 'Успешных запросов', 'Ошибок']
+		]
+		for column in program['columns']:
+			program['chart_array'].append([
+				column['date'].strftime('%d-%m-%Y'),
+				column['Publication'],
+				column['Status'],
+				column['Error'],
+			])
+		del program['columns']
 
-			for chart_line in program['chart_array']:
-				for key, value in enumerate(chart_line):
-					if isinstance(value, list):
-						chart_line[key] = 0
-		return programs
+		for chart_line in program['chart_array']:
+			for key, value in enumerate(chart_line):
+				if isinstance(value, list):
+					chart_line[key] = 0
+		return program
 
 	def __get_synonim_words_count(self, less_day_words):
 		count = 0

@@ -17,9 +17,17 @@ class Base:
 				'url': '/canonizator/',
 				'text': 'program manager',
 			},
+			'program statistics': {
+				'url': '/program_statistics/',
+				'text': 'program statistics',
+			},
 			'common statistics': {
 				'url': '/common_statistics/',
 				'text': 'common statistics',
+			},
+			'pubcompare statistics': {
+				'url': '/pubcompare_statistics/',
+				'text': 'pubcompare statistics'
 			},
 			'vocabulary statistics': {
 				'url': '/vocabulary_statistics/',

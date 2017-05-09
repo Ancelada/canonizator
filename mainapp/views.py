@@ -2,10 +2,11 @@ import os
 import signal
 import json
 
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
+
 from .mainapp import MainApp
 from .statistics import Statistics
 from interface.base import Base
@@ -18,22 +19,88 @@ def read_ajax(request):
 		if response != None:
 			return response
 
-def common_statistics(request):
+
+def program_statistics_unit(request, program_id):
+	if request.user.is_authenticated():
+		if any(program_id == program['id'] for program in Statistics().programs):
+			args = {}
+
+			#центральная панель
+			elems = []
+
+			# статистика программы
+			elems.append(render_to_string('program_statistic.html', {
+				'program_statistic': Statistics().build_copy_and_normalize_publications_statistics(
+					program_id),
+			}))
+
+			args['central_panel'] = Base().central_panel(elems)
+
+			#левая панель
+			args['left_panel'] = Base().left_panel(Base().build_left_panel_links(
+				'program statistics'))
+
+			#правая панель
+			args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
+			return Base().page(request, args)
+		else:
+			raise Http404
+	else:
+		return redirect('/{0}/login/'.format('canonizator'))
+
+def program_statistics(request):
+	if request.user.is_authenticated():
+		args = {}
+
+		#центральная панель
+		elems = []
+		elems.append(render_to_string('copy_n_normalize_statistics_list.html', {
+			'programs': Statistics().programs,
+		}))
+
+		args['central_panel'] = Base().central_panel(elems)
+
+		#левая панель
+		args['left_panel'] = Base().left_panel(Base().build_left_panel_links(
+			'program statistics'))
+
+		#правая панель
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
+		return Base().page(request, args)
+	else:
+		return redirect('/{0}/login/'.format('canonizator'))
+
+
+def pubcompare_statistics(request):
 	if request.user.is_authenticated():
 		args = {}
 
 		#центральная панель
 		elems = []
 
-		# статистика скопированных и нормализованных по дням
-		elems.append(render_to_string('statistics.html', {
-			'statistics': Statistics().build_copy_and_normalize_publications_statistics(),
-		}))
-
 		# статистика поиска нечетких дублей
 		elems.append(render_to_string('statistics_pubcompare.html', {
 			'statistics_pubcompare': Statistics().build_statistics_pubcompare(),
 		}))
+
+		args['central_panel'] = Base().central_panel(elems)
+
+		#левая панель
+		args['left_panel'] = Base().left_panel(Base().build_left_panel_links(
+			'pubcompare statistics'))
+
+		#правая панель
+		args['right_panel'] = Base().right_panel(Base().build_right_panel_elems(request))
+		return Base().page(request, args)
+	else:
+		return redirect('/{0}/login/'.format('canonizator'))
+
+def common_statistics(request):
+	if request.user.is_authenticated():
+		args = {}
+
+		#центральная панель
+		elems = []
 
 		#общая статистика
 		elems.append(render_to_string('statistics_common.html', {

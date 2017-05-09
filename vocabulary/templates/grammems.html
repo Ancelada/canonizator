@@ -25,7 +25,13 @@
 						{{grammem.name_rus}}
 					</td>
 					<td>{{grammem.count}}</td>
-					<td>{{grammem.with_tone}}</td>
+					<td
+					{% if grammem.count == grammem.with_tone %}
+						class="color_success"
+					{% else %}
+						class="color_alert"
+					{% endif %}
+					>{{grammem.with_tone}}</td>
 					<td>{{grammem.with_tone_by_user}}</td>
 				</tr>
 			{% endfor %}
