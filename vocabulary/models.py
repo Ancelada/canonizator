@@ -1,297 +1,251 @@
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import models
-import mptt
-from mptt.models import MPTTModel, TreeForeignKey
-from mptt.managers import TreeManager
 
 from django_mysql.models import Model
 # Части речи в соответствии с OpenCorpora http://opencorpora.org/dict.php?act=gram
 
 
 #имя существительное
-class NOUN(MPTTModel):
+class NOUN(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
+	level = models.IntegerField(default=0)
 
-	tree = TreeManager()
+
 
 	def __str__(self):
 		return self.name
 
-mptt.register(NOUN, order_insertion_by=['name'])
-
 #имя прилагательное(полное)
-class ADJF(MPTTModel):
+class ADJF(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 #имя прилагательное (краткое)
-class ADJS(MPTTModel):
+class ADJS(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 #компаратив
-class COMP(MPTTModel):
+class COMP(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 #глагол (личная форма)
-class VERB(MPTTModel):
+class VERB(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 #глагол (инфинитив)
-class INFN(MPTTModel):
+class INFN(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 #причастие (полное)
-class PRTF(MPTTModel):
+class PRTF(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # причастие (краткое)
-class PRTS(MPTTModel):
+class PRTS(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # деепричастие
-class GRND(MPTTModel):
+class GRND(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # числительное
-class NUMR(MPTTModel):
+class NUMR(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # наречие
-class ADVB(MPTTModel):
+class ADVB(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # латиница
-class LATN(MPTTModel):
+class LATN(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # число 
-class NUMB(MPTTModel):
+class NUMB(Model):
 
 	class MPTTMeta:
 		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # целое число
-class intg(MPTTModel):
+class intg(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # вещественное число
-class real(MPTTModel):
+class real(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
@@ -302,160 +256,137 @@ class real(MPTTModel):
 
 
 # местоимение
-class NPRO(MPTTModel):
+class NPRO(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # предикатив
-class PRED(MPTTModel):
+class PRED(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # предлог
-class PREP(MPTTModel):
+class PREP(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name	
 		
 # союз
-class CONJ(MPTTModel):
+class CONJ(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # частица
-class PRCL(MPTTModel):
+class PRCL(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # междометие
-class INTJ(MPTTModel):
+class INTJ(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 # римское число
-class ROMN(MPTTModel):
+class ROMN(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name 
 
 
 # не удалось разобрать
-class UNKN(MPTTModel):
+class UNKN(Model):
 
-	class MPTTMeta:
-		order_insertion_by = ['crc32']
 	name = models.CharField(max_length=512)
 	crc32 = models.BigIntegerField(default=0, db_index=True)
 	vikidict_scaned = models.BooleanField(default=False)
-	parent = TreeForeignKey('self', blank=True, null=True, \
-	 related_name='children', db_index=True)
+	vikidict_correction_tested = models.BooleanField(default=False)
+	parent = models.ForeignKey('self', blank=True, null=True, db_index=True)
 	date = models.DateTimeField(default=timezone.now)
 	User = models.ForeignKey(User, blank=True, null=True)
 	Tone = models.IntegerField(blank=True, null=True)
-
-	tree = TreeManager()
+	level = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
 
 
 #############################################################
+# разбор синонимов
 class VocabularyStatus(Model):
 
 	status = models.CharField(max_length=256, blank=True, null=True)
@@ -463,6 +394,19 @@ class VocabularyStatus(Model):
 	date = models.DateTimeField(default=timezone.now)
 
 class VocabularyError(Model):
+
+	error = models.TextField()
+	date = models.DateTimeField(default=timezone.now)
+
+#############################################################
+# проверка корректности слов
+class IncorrectStatus(Model):
+
+	status = models.CharField(max_length=256, blank=True, null=True)
+	count = models.IntegerField(blank=True, null=True)
+	date = models.DateTimeField(default=timezone.now)
+
+class IncorrectError(Model):
 
 	error = models.TextField()
 	date = models.DateTimeField(default=timezone.now)

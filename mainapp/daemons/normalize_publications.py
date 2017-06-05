@@ -233,11 +233,8 @@ class Program:
 				words.append(self.grammems_to_remove_models[key](
 					name=word['word'],
 					crc32=word['crc32'],
-					lft=0,
-					rght=0,
-					level=0,
-					tree_id=0,
-				))
+					)
+				)
 			if len(words) > 0:
 				now = timezone.now()
 				self.grammems_to_remove_models[key].objects.bulk_create(words)
@@ -250,8 +247,11 @@ class Program:
 		for key in vocabulary:
 			words = []
 			for word in vocabulary[key]:
-				words.append(self.voc_models[key](name=word, crc32=self.__convert_crc32(word), \
-				 lft=0, rght=0, level=0, tree_id=0))
+				words.append(self.voc_models[key](
+					name=word,
+					crc32=self.__convert_crc32(word),
+					)
+				)
 			if len(words) > 0:
 				now = timezone.now()
 				self.voc_models[key].objects.bulk_create(words)

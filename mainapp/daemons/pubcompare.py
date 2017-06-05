@@ -43,7 +43,7 @@ class PubCompare():
 			'copy': {
 				'coefficient': {
 					'min': 70,
-					'max': 100,
+					'max': 200,
 				},
 				'db_value': 3,
 			},
@@ -77,6 +77,7 @@ class PubCompare():
 		shingles_source_1 = self.__make_shingles_list(source_1)
 
 		shingles_source_2 = self.__make_shingles_list(source_2)
+
 
 		if len(shingles_source_1) > 0 and len(shingles_source_2) > 0:
 			for shingle in shingles_source_1:

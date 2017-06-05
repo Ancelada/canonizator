@@ -74,7 +74,7 @@ class MainApp:
 		for name in os.listdir(os.path.join(self.path, 'daemons')):
 			if name.startswith('copy_pub') or name.startswith('normalize_pub') \
 			 or name.startswith('links_syn') or name.startswith('make_h') \
-			 or name.startswith('pubc'):
+			 or name.startswith('pubc') or name.startswith('incorrect'):
 				yield name[:-3]
 
 	def __import_submodules(self, package):
